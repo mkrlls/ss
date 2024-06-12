@@ -1,0 +1,133 @@
+<html>
+  <head><!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TDJD5HXDXQ"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-TDJD5HXDXQ');
+    </script>
+    <meta charset="UTF-8">
+    <title>かわいい！</title>
+    <style>
+    </style>
+    <script src='https://code.jquery.com/jquery-3.6.3.slim.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js'></script>
+    <!-- <script src="https://kit.fontawesome.com/10f12cc2bf.js" crossorigin="anonymous"></script> -->
+  </head>
+<body>
+  
+  <div class="header">
+    <div class="ctrl">
+      <label id="choose">
+      ファイルを選択<input type="file" name="file" id="file">
+      </label>
+    </div>
+    <div class="canvasblock"></div>
+    <div class="ctrl ctrl2">
+      <button id="download" class="rad-button static small dark flat">透過解除してダウンロード</button>
+    </div>
+  </div>
+  <div class="footer">
+  <div id="working"></div>
+    <p>
+    </p>
+  </div>
+<script>
+  
+
+  var canv = document.getElementById('canv');
+  var canvas;
+  var ss_img;
+
+
+  function init() {
+    setup();
+
+    var file = document.getElementById('file');
+    file.addEventListener('change', loadLocalImage, false);
+    var dl = document.getElementById('download');
+    dl.onclick = (event) => downloadCanvasImage(event);
+
+    // draw();
+  }
+
+  var _fileData;
+  function loadLocalImage(e) {
+    var fileData = e.target.files[0];
+    // 画像ファイル以外は処理を止める
+    if(!fileData.type.match('image.*')) {
+      alert('画像を選択してください');
+      return;
+    }
+    _fileData = fileData;
+    draw(fileData);
+  }
+
+  var loadedImage = {}
+  function draw(fileData) {
+    if (fileData) {
+      var pr = new Promise((resolve) => resolve(fileData))
+        .then((imgFile) => readFile(imgFile))
+    } else {
+      var pr = new Promise((resolve) => resolve('ss.png'))
+    }
+    pr.then((imgSrc) => loadImage('ss', imgSrc))
+      .then(() => loadImage('v', 'v.png'))
+      .then(() => drawCanvas());
+  }
+
+  // FileReaderオブジェクトで画像ファイル読み込み
+  function readFile(fileData) {
+    return new Promise((resolve) => {
+      var reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.readAsDataURL(fileData);
+    });
+  }
+
+  function loadImage(imgKey, imgSrc) {
+    return new Promise((resolve) => {
+      var img = new Image();
+      loadedImage[imgKey] = img;
+      img.onload = () => resolve('ok');
+      img.src = imgSrc;
+    });
+  }
+
+  function drawCanvas() {
+    var img = loadedImage.v;
+    $('.canvasblock').html('').append($('<canvas>').attr('id', 'canv'));
+
+    var kawa_img = new fabric.Image(img, {selectable:false, hoverCursor:'Default'});
+
+    canvas = new fabric.Canvas('canv', {selection: false, preserveObjectStacking: true});
+    canvas.clear();
+    canvas.setDimensions({width:kawa_img.getScaledWidth(), height:kawa_img.getScaledHeight()});
+    canvas.add(kawa_img);
+
+    ss_img = new fabric.Image(loadedImage.ss, {opacity:0.5});
+    canvas.add(ss_img);
+    canvas.renderAll();
+
+    $('.ctrl2').show();
+  }
+
+  function downloadCanvasImage(event) {
+    ss_img.opacity = 1;
+    canvas.sendToBack(ss_img);
+    canvas.renderAll();
+    let link = document.createElement("a");
+    link.href = $('#canv').get(0).toDataURL("image/png");
+    link.download = "kawaii.png";
+    link.click();
+  }
+
+  function setup() {
+  }
+
+  init();
+</script>
+</body>
+</html>
