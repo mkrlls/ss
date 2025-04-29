@@ -27,7 +27,10 @@ function composite(imgSrc) {
     .then((val) => loadImage('ss', imgSrc))
     .then(() => drawCanvasSeparater())
     .then(() => drawCanvasClip())
-    .catch((msg) => console.log('Promise stop: ' + msg));
+    .catch((msg) => {
+      console.error('Error during composite process:', msg);
+      alert('画像処理中にエラーが発生しました: ' + msg);
+    });
 }
 
 function setupCanvas(name, hideFlg = false) {
@@ -252,10 +255,15 @@ function createCompositeButton() {
     .css({ margin: '15px' })
     .addClass('rad-button static small dark flat')
     .click(() => {
-      const new_img = new Image();
-      loadedImage.step2 = new_img;
-      new_img.onload = () => drawCanvasComposite();
-      new_img.src = canvas2.toDataURL({ format: 'png' });
+      try {
+        const new_img = new Image();
+        loadedImage.step2 = new_img;
+        new_img.onload = () => drawCanvasComposite();
+        new_img.src = canvas2.toDataURL({ format: 'png' });
+      } catch (error) {
+        console.error('Error creating composite button:', error);
+        alert('ボタン処理中にエラーが発生しました: ' + error.message);
+      }
     })
     .appendTo($('#ss2'));
 }
