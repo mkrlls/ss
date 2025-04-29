@@ -45,22 +45,25 @@ function setupCanvas(name, hideFlg = false) {
 }
 
 var clipimg, clipline;
+const BASE_SIZE = 1000;
+const CLIP_LINE_WIDTH_RATIO = 0.02;
+const CLIP_LINE_HEIGHT_RATIO = 0.6;
+const CLIP_IMG_SCALE_RATIO = 0.3;
 function drawCanvasSeparater() {
-  var base_size = 1000;
-  var canv = setupCanvas('separater');
+  const canv = setupCanvas('separater');
   $('<div>').html('青いラインを動かして画像を切り抜きます<br />動かす時に飛び出ている□で角度を変えられます')
     .appendTo($(canv).parent());
 
   clipimg = new fabric.Image(loadedImage.ss);
-  clipimg.scaleToWidth(base_size);
-  var width = clipimg.getScaledWidth();
-  var height = clipimg.getScaledHeight();
-  var canvas = new fabric.Canvas('separaterCanvas', {selection: false, preserveObjectStacking: !true});
+  clipimg.scaleToWidth(BASE_SIZE);
+  const width = clipimg.getScaledWidth();
+  const height = clipimg.getScaledHeight();
+  const canvas = new fabric.Canvas('separaterCanvas', {selection: false, preserveObjectStacking: !true});
   canvas.clear();
   canvas.renderAll();
   canvas.setDimensions({width: width, height: height});
 
-  clipimg.scaleToWidth(width * 0.3);
+  clipimg.scaleToWidth(width * CLIP_IMG_SCALE_RATIO);
   clipimg.set({
     originX: 'center',
     originY: 'center',
@@ -75,8 +78,8 @@ function drawCanvasSeparater() {
     originY: 'center',
     left: width * 0.5,
     top: height * 0.5,
-    width: width * 0.02,
-    height: height * 0.6,
+    width: width * CLIP_LINE_WIDTH_RATIO,
+    height: height * CLIP_LINE_HEIGHT_RATIO,
     fill: 'rgba(0,0,200,0.3)',
     angle: 0
   });
