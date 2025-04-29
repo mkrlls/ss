@@ -51,6 +51,9 @@ const BASE_SIZE = 1000;
 const CLIP_LINE_WIDTH_RATIO = 0.02;
 const CLIP_LINE_HEIGHT_RATIO = 0.6;
 const CLIP_IMG_SCALE_RATIO = 0.3;
+/**
+ * 画像分割用のキャンバスを描画する関数
+ */
 function drawCanvasSeparater() {
   const canv = setupCanvas('separater');
   $('<div>').html('青いラインを動かして画像を切り抜きます<br />動かす時に飛び出ている□で角度を変えられます')
@@ -95,7 +98,9 @@ function drawCanvasSeparater() {
   canvas.on('object:rotating', () => drawCanvasClip());
 }
 
-var canvas1, polygon1;
+/**
+ * 画像クリッピング用のキャンバスを描画する関数
+ */
 function drawCanvasClip() {
   const cpr = getCrossPoint(clipline.aCoords, clipimg.aCoords);
   const base_size = BASE_SIZE;
@@ -171,6 +176,9 @@ function drawCanvasClip() {
   }
 }
 
+/**
+ * 画像の残り部分を描画するキャンバスを設定する関数
+ */
 function drawCanvasRemain() {
   const cpr = getCrossPoint(clipline.aCoords, clipimg.aCoords);
   const base_size = 1000;
@@ -193,6 +201,21 @@ function drawCanvasRemain() {
   createCompositeButton();
 }
 
+/**
+ * 画像を結合するキャンバスを描画する関数
+ */
+function drawCanvasComposite() {
+ var canv = setupCanvas('com');
+ var fimg = new fabric.Image(loadedImage.step1);
+ var fimg2 = new fabric.Image(loadedImage.step2);
+ var canvas = new fabric.Canvas('comCanvas', {selection: false, preserveObjectStacking: !true});
+ canvas.setDimensions({width:fimg2.getScaledWidth(), height:fimg2.getScaledHeight()});
+ canvas.add(fimg).add(fimg2).renderAll();
+}
+
+/**
+ * 汎用的なFabric.jsの画像オブジェクトを作成する関数
+ */
 function createFabricImage(image, baseSize) {
   const fimg = new fabric.Image(image);
   fimg.scaleToWidth(baseSize);
@@ -200,12 +223,18 @@ function createFabricImage(image, baseSize) {
   return fimg;
 }
 
+/**
+ * キャンバスの幅と高さを設定する関数
+ */
 function setCanvasDimensions(fimg, canv) {
   const width = fimg.getScaledWidth();
   const height = fimg.getScaledHeight();
   return { width, height };
 }
 
+/**
+ * 背景キャンバスを設定する関数
+ */
 function setupBackgroundCanvas(width, height) {
   $('<canvas>').attr('id', 'step2bg').prependTo($('#ss2'));
   const bgcanvas = new fabric.Canvas('step2bg', { selection: false, preserveObjectStacking: true });
@@ -215,6 +244,9 @@ function setupBackgroundCanvas(width, height) {
   $('#step2bg').parent().css({ position: 'absolute' });
 }
 
+/**
+ * クリッピング用のポリゴンを作成する関数
+ */
 function createClippingPolygon(cpr, width, height) {
   const topleft = { x: 0, y: 0 };
   const topright = { x: width, y: 0 };
@@ -243,6 +275,9 @@ function createClippingPolygon(cpr, width, height) {
   });
 }
 
+/**
+ * 画像結合ボタンを作成する関数
+ */
 function createCompositeButton() {
   $('<button>')
     .html('Composite')
@@ -260,13 +295,4 @@ function createCompositeButton() {
       }
     })
     .appendTo($('#ss2'));
-}
-
-function drawCanvasComposite() {
- var canv = setupCanvas('com');
- var fimg = new fabric.Image(loadedImage.step1);
- var fimg2 = new fabric.Image(loadedImage.step2);
- var canvas = new fabric.Canvas('comCanvas', {selection: false, preserveObjectStacking: !true});
- canvas.setDimensions({width:fimg2.getScaledWidth(), height:fimg2.getScaledHeight()});
- canvas.add(fimg).add(fimg2).renderAll();
 }
