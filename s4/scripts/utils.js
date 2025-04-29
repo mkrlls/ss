@@ -56,4 +56,4 @@ function _getCrossPoint(pointA, pointB, pointC, pointD) {
   return cross_point;
 }
 
-export { getCrossPoint };
+module.exports = { getCrossPoint };
