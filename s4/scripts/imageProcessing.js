@@ -175,92 +175,89 @@ function drawCanvasClip() {
 }
 
 function drawCanvasRemain() {
- var cpr = getCrossPoint(clipline.aCoords, clipimg.aCoords);
- var base_size = 1000;
- var canv = setupCanvas('ss2');
+  const cpr = getCrossPoint(clipline.aCoords, clipimg.aCoords);
+  const base_size = 1000;
+  const canv = setupCanvas('ss2');
 
- var fimg = new fabric.Image(loadedImage.ss2);
- fimg.scaleToWidth(base_size);
- fimg.setControlsVisibility({
-   ml:false, mr:false, mb:false, mt:false,
- });
- var width = fimg.getScaledWidth();
- var height = fimg.getScaledHeight();
- canvas2 = new fabric.Canvas('ss2Canvas', {selection: false, preserveObjectStacking: !true});
- canvas2.clear();
- canvas2.setDimensions({width: width, height: height});
+  const fimg = createFabricImage(loadedImage.ss2, base_size);
+  const { width, height } = setCanvasDimensions(fimg, canv);
 
- $('<canvas>').attr('id', 'step2bg').prependTo($('#ss2'));
- var bgcanvas = new fabric.Canvas('step2bg', {selection: false, preserveObjectStacking: !true});
- var bgimg = new fabric.Image(loadedImage.step1);
- bgcanvas.setDimensions({width: width, height: height});
- bgcanvas.add(bgimg).renderAll();
- $('#step2bg').parent().css({position:'absolute'});
- 
- var topleft = {x: 0, y: 0};
- var topright = {x: width, y: 0};
- var bottomright = {x: width, y: height};
- var bottomleft = {x: 0, y: height};
- var left_x = 0;
- var top_y = 0;
- var p = [topleft, topright, bottomright, bottomleft];
- if (cpr.top && cpr.bottom) {
-   p[0].x = width * cpr.top;
-   p[3].x = width * cpr.bottom;
-   left_x = width * Math.min(cpr.top, cpr.bottom);
- } else if (cpr.left && cpr.right) {
-   p[0].y = height * cpr.left;
-   p[1].y = height * cpr.right;
-   top_y = height * Math.min(cpr.left, cpr.right);
- } else if (cpr.top && cpr.left) {
-   p[0].x = width * cpr.top;
-   p[3].x = 0;
-   p[4] = {x:0, y: height * cpr.left};
- } else if (cpr.top && cpr.right) {
-   p[0].x = width * cpr.top;
-   p[1].x = width * cpr.top;
-   p[2].y = 0;
-   p[3].x = width;
-   p[3].y = height * cpr.right;
-   left_x = width * cpr.top;
- } else if (cpr.bottom && cpr.left) {
-   p[0].y = height * cpr.left;
-   p[1].x = 0;
-   p[1].y = height * cpr.left;
-   p[2].x = width * cpr.bottom;
-   top_y = height * cpr.left;
- } else if (cpr.bottom && cpr.right) {
-   p[0].x = width;
-   p[0].y = height * cpr.right;
-   p[1].y = height * cpr.right;
-   p[3].x = width * cpr.bottom;
-   left_x = width * cpr.bottom;
-   top_y = height * cpr.right;
- }
- var polygon = new fabric.Polygon(p, {
-   left: left_x,
-   top: top_y,
-   fill: 'rgba(0,0,0,0)',
-   objectCaching: false,
-   transparentCorners: false,
-   cornerColor: 'blue',
-   selectable: false,
-   evented: false
- });
- canvas2.controlsAboveOverlay = true;
- canvas2.add(polygon);
- canvas2.add(fimg);
- canvas2.clipPath = polygon;
- canvas2.renderAll();
+  setupBackgroundCanvas(width, height);
+  const polygon = createClippingPolygon(cpr, width, height);
 
- $('<button>').html('Composite').css({margin:'15px'}).addClass('rad-button static small dark flat').click((e) => {
-   var new_img = new Image();
-   loadedImage.step2 = new_img;
-   new_img.onload = () => drawCanvasComposite();
-   new_img.src = canvas2.toDataURL({
-     format: 'png',
-   });
- }).appendTo($('#ss2'));
+  canvas2 = new fabric.Canvas('ss2Canvas', { selection: false, preserveObjectStacking: true });
+  canvas2.clear();
+  canvas2.setDimensions({ width, height });
+  canvas2.add(polygon);
+  canvas2.add(fimg);
+  canvas2.clipPath = polygon;
+  canvas2.renderAll();
+
+  createCompositeButton();
+}
+
+function createFabricImage(image, baseSize) {
+  const fimg = new fabric.Image(image);
+  fimg.scaleToWidth(baseSize);
+  fimg.setControlsVisibility({ ml: false, mr: false, mb: false, mt: false });
+  return fimg;
+}
+
+function setCanvasDimensions(fimg, canv) {
+  const width = fimg.getScaledWidth();
+  const height = fimg.getScaledHeight();
+  return { width, height };
+}
+
+function setupBackgroundCanvas(width, height) {
+  $('<canvas>').attr('id', 'step2bg').prependTo($('#ss2'));
+  const bgcanvas = new fabric.Canvas('step2bg', { selection: false, preserveObjectStacking: true });
+  const bgimg = new fabric.Image(loadedImage.step1);
+  bgcanvas.setDimensions({ width, height });
+  bgcanvas.add(bgimg).renderAll();
+  $('#step2bg').parent().css({ position: 'absolute' });
+}
+
+function createClippingPolygon(cpr, width, height) {
+  const topleft = { x: 0, y: 0 };
+  const topright = { x: width, y: 0 };
+  const bottomright = { x: width, y: height };
+  const bottomleft = { x: 0, y: height };
+  const points = [topleft, topright, bottomright, bottomleft];
+
+  // Adjust points based on cross points (cpr)
+  if (cpr.top && cpr.bottom) {
+    points[0].x = width * cpr.top;
+    points[3].x = width * cpr.bottom;
+  } else if (cpr.left && cpr.right) {
+    points[0].y = height * cpr.left;
+    points[1].y = height * cpr.right;
+  }
+
+  return new fabric.Polygon(points, {
+    left: 0,
+    top: 0,
+    fill: 'rgba(0,0,0,0)',
+    objectCaching: false,
+    transparentCorners: false,
+    cornerColor: 'blue',
+    selectable: false,
+    evented: false
+  });
+}
+
+function createCompositeButton() {
+  $('<button>')
+    .html('Composite')
+    .css({ margin: '15px' })
+    .addClass('rad-button static small dark flat')
+    .click(() => {
+      const new_img = new Image();
+      loadedImage.step2 = new_img;
+      new_img.onload = () => drawCanvasComposite();
+      new_img.src = canvas2.toDataURL({ format: 'png' });
+    })
+    .appendTo($('#ss2'));
 }
 
 function drawCanvasComposite() {
