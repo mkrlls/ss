@@ -20,13 +20,38 @@
 <body>
   <div>
     <h3>画像分割、結合</h3>
-    <label class="choose rad-button static small dark flat">
-      ファイルを選択<input type="file" name="file" id="file">
-    </label>
-    <div id="working"></div>
+    <div class="border-b border-gray-200">
+      <nav class="tabs -mb-px flex w-full" aria-label="Tabs">
+        <a href="#step1" class="tab-button flex-1 py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300" aria-current="page">ステップ1</a>
+        <a href="#step2" class="tab-button flex-1 py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">ステップ2</a>
+        <a href="#step3" class="tab-button flex-1 py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-500 hover:text-gray-700 hover:border-gray-300">ステップ3</a>
+      </nav>
+    </div>
+    <div class="tab-content" id="step1">
+      <label class="choose rad-button static small dark flat">
+        ファイルを選択<input type="file" name="file" id="file">
+      </label>
+      <div id="working"></div>
+    </div>
+    <div class="tab-content hidden" id="step2">
+      <p>ステップ2の内容がここに表示されます。</p>
+    </div>
+    <div class="tab-content hidden" id="step3">
+      <p>ステップ3の内容がここに表示されます。</p>
+    </div>
   </div>
   <script>
-    $(() => init());
+    $(() => {
+      init();
+      $('.tab-button').on('click', function(e) {
+        e.preventDefault();
+        const targetTab = $(this).attr('href').substring(1);
+        $('.tab-button').removeClass('border-indigo-500 text-indigo-600');
+        $(this).addClass('border-indigo-500 text-indigo-600');
+        $('.tab-content').addClass('hidden');
+        $(`#${targetTab}`).removeClass('hidden');
+      });
+    });
   </script>
 </body>
 </html>
