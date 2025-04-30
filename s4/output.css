@@ -1,42 +1,22 @@
-/*! tailwindcss v4.1.4 | MIT License | https://tailwindcss.com */
-@layer properties;
-.absolute {
-  position: absolute;
+.tabs {
+  display: flex;
+  width: 100%;
 }
-.static {
-  position: static;
+.tab-button {
+  flex: 1;
+  text-align: center;
+  padding: 0.5rem 0;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  cursor: pointer;
 }
-.transform {
-  transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
+.tab-button.active {
+  background-color: #ddd;
+  font-weight: bold;
 }
-@property --tw-rotate-x {
-  syntax: "*";
-  inherits: false;
+.tab-content {
+  display: none;
 }
-@property --tw-rotate-y {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-rotate-z {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-skew-x {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-skew-y {
-  syntax: "*";
-  inherits: false;
-}
-@layer properties {
-  @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
-    *, ::before, ::after, ::backdrop {
-      --tw-rotate-x: initial;
-      --tw-rotate-y: initial;
-      --tw-rotate-z: initial;
-      --tw-skew-x: initial;
-      --tw-skew-y: initial;
-    }
-  }
+.tab-content:not(.hidden) {
+  display: block;
 }
