@@ -48,3 +48,10 @@
    - Nodejs
      - 開発関連ツール用
      - アプリそのものには使わない
+
+## GitHubリポジトリ情報
+
+このプロジェクトのGitHubリポジトリは以下のURLにあります。
+- URL: [https://github.com/mkrlls/ss.git](https://github.com/mkrlls/ss.git)
+
+今後、イシューやプルリクエストの管理はこのリポジトリで行います。
